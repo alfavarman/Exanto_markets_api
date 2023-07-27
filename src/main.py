@@ -1,13 +1,12 @@
 import sys
 
-from dotenv import load_dotenv
 from openpyxl import load_workbook
 
-from api_services import get_api_data, get_env_variable
+from api_services import get_api_data
 from utils import (
     validate_file_name,
     update_file_positions_with_api_data,
-    update_file_exante_available_cash
+    update_file_exante_available_cash, get_currencies_converted_value
 )
 
 # list of accepted files types
@@ -41,7 +40,8 @@ def main():
 
     # update file
     api_positions = api_data["positions"]
-    available_cash = api_data["freeMoney"]
+
+    available_cash = get_currencies_converted_value(data=api_data["currencies"])
     update_file_positions_with_api_data(api_positions=api_positions, sheet=sheet)
     update_file_exante_available_cash(available_cash=available_cash, sheet=sheet)
 

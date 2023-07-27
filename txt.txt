@@ -1,0 +1,7 @@
+obsluga pliku
+
+Class Exel
+
+drugi plik
+zaputanie,
+otwi

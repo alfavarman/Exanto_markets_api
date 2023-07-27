@@ -3,6 +3,8 @@ import requests
 from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
 
+from draft import data
+
 load_dotenv(dotenv_path="../.env")
 
 
@@ -19,9 +21,10 @@ currency = get_env_variable("CURRENCY")
 version = get_env_variable("VERSION")
 username = get_env_variable("USERNAME")
 password = get_env_variable("PASSWORD")
-api_url = f"https://api-live.exante.eu/md/{version}/summary/{id_acc_id}/{currency}"
+api_url = f'{get_env_variable("API_URL")}'
 
 
 def get_api_data() -> dict:
-    data = requests.get(url=api_url, auth=HTTPBasicAuth(username=username, password=password))
-    return data.json()
+    # data = requests.get(url=api_url, auth=HTTPBasicAuth(username=username, password=password))
+    # return data.json()
+    return data

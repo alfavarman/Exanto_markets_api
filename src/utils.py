@@ -36,7 +36,7 @@ def validate_file_name(name: str, file_types: tuple) -> bool:
     return file_type in file_types
 
 
-def represent_in_thousands(value: str) -> float:
+def represent_in_thousands(value: float) -> float:
     """ represent value in thousands"""
     try:
         float_value = float(value)
@@ -64,7 +64,7 @@ def update_file_positions_with_api_data(api_positions: dict, sheet) -> None:
     file_tickers = file_positions.keys()
 
     for position in api_positions:
-        ticker = position["id"].split(".")[0]
+        ticker = position["symbolId"].split(".")[0]
 
         # confirm ticker exist in file
         if ticker in file_tickers:
@@ -78,14 +78,12 @@ def update_file_positions_with_api_data(api_positions: dict, sheet) -> None:
             print(f"ALERT: Ticker {ticker} not found in file")
 
 
-def update_file_exante_available_cash(available_cash: str, sheet) -> None:
+def update_file_exante_available_cash(available_cash: float, sheet) -> None:
     """
     update available cash to file,
     function update if values are not same,
     if value is 0.0 cell will be empty
     """
-    available_cash = represent_in_thousands(available_cash)
-
     for row_number, row in enumerate(sheet.iter_rows(values_only=True), start=1):
         if row[0] == AVAILABLE_CASH:
             cell_value = convert_to_float(sheet.cell(row=row_number, column=COL_E).value)
@@ -95,3 +93,11 @@ def update_file_exante_available_cash(available_cash: str, sheet) -> None:
             break
     else:
         raise Exception(f"{AVAILABLE_CASH} not found in file")
+
+
+def get_currencies_converted_value(data: dict[dict]) -> float: #TODO comprehentions
+    totals = 0.0
+    for currency in data:
+        totals += float(currency["convertedValue"])
+    return represent_in_thousands(totals)
+
