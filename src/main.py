@@ -10,8 +10,6 @@ from utils import (
     update_file_exante_available_cash
 )
 
-
-
 # list of accepted files types
 FILES_TYPES = ("xlsx", "xls")
 
