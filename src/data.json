@@ -149,6 +149,19 @@
       "averagePrice": "7.5991"
     },
     {
+      "convertedPnl": "798.05",
+      "symbolId": "ZORRO.NYSE",
+      "convertedValue": "5690.75",
+      "price": "43.775",
+      "accruedInterest": null,
+      "symbolType": "STOCK",
+      "value": "5690.75",
+      "quantity": "130",
+      "pnl": "798.05",
+      "currency": "USD",
+      "averagePrice": "37.6362"
+    },
+    {
       "convertedPnl": "-1019.6",
       "symbolId": "TSN.NYSE",
       "convertedValue": "4419.6",

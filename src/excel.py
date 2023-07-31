@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 
 
 # logger to log to console with information
-logging.getLogger().setLevel(logging.INFO)
+# logging.getLogger().setLevel(logging.INFO)
 
 
 class ExelHandler:
@@ -30,7 +30,7 @@ class ExelHandler:
         logging.info(f"File {self.file_name} updated and closed successfully")
 
     def update_file_with_api_data(self, api_data: dict) -> None:
-        """ update file with api data"""
+        """update file with api data"""
         for position in api_data["positions"]:
             self._update_position(api_position=position)
         self._update_available_cash(api_currencies=api_data["currencies"])
@@ -46,8 +46,9 @@ class ExelHandler:
         positions = {}
         encountered_tickers = set()
 
-        for row_number, row_data in enumerate(self.file.active.iter_rows(min_row=self.COLUMN_A, values_only=True),
-                                              start=1):
+        for row_number, row_data in enumerate(
+            self.file.active.iter_rows(min_row=self.COLUMN_A, values_only=True), start=1
+        ):
             ticker = row_data[1]
             # Skip excluded tickers
             if ticker in self.EXCLUDED_TICKERS or row_data[0] == self.CASH:
@@ -85,7 +86,7 @@ class ExelHandler:
         """
         ticker = api_position["symbolId"].split(".")[0]
         if ticker not in self.positions:
-            logging.warning(f"Ticker {ticker} not found in Excel file")
+            logging.warning(f"Ticker {ticker} not found in Excel file. Should You add?")
         else:
             value = self._repr_in_thousands(api_position["convertedValue"])
             self._update_row_value(ticker=ticker, value=value)
