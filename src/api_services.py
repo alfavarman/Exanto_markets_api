@@ -3,7 +3,7 @@ import requests
 from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
 
-from draft import data
+from draft import data      # TODO -> test_data.json
 
 load_dotenv(dotenv_path="../.env")
 
