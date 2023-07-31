@@ -3,6 +3,7 @@ import sys
 
 from api_services import get_api_data
 from excel import ExelHandler
+from openpyxl import load_workbook
 
 
 def main():
@@ -14,8 +15,10 @@ def main():
 
     # get API data
     api_data = get_api_data()
-    file_path = ExelHandler(file_name=file_path)
-    file_path.update_file_with_api_data(api_data=api_data)
+
+    # with context manager to handle errors
+    with ExelHandler(file_name=file_path, load_workbook_func=load_workbook) as file_handler:
+        file_handler.update_file_with_api_data(api_data=api_data)
 
 
 if __name__ == "__main__":

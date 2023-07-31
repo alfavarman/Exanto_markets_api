@@ -1,8 +1,8 @@
 import logging
 from typing import List, Dict, Any
-from openpyxl import load_workbook
 
-# console
+
+# logger to log to console with information
 logging.getLogger().setLevel(logging.INFO)
 
 
@@ -13,19 +13,27 @@ class ExelHandler:
     COLUMN_E = 5
     COLUMN_A = 1
 
-    def __init__(self, file_name: str):
+    def __init__(self, file_name: str, load_workbook_func):
         self.file_name = file_name
-        self.file = load_workbook(self.file_name)
+        self.load_workbook_func = load_workbook_func
+        self.file = None
+        self.positions = None
+
+    def __enter__(self):
+        self.file = self.load_workbook_func(self.file_name)
         self.positions = self._load_file_positions()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.file.save(self.file_name)
+        self.file.close()
+        logging.info(f"File {self.file_name} updated and closed successfully")
 
     def update_file_with_api_data(self, api_data: dict) -> None:
         """ update file with api data"""
         for position in api_data["positions"]:
             self._update_position(api_position=position)
         self._update_available_cash(api_currencies=api_data["currencies"])
-        self.file.save(self.file_name)
-        self.file.close()
-        logging.info(f"File {self.file_name} updated successfully")
 
     def _load_file_positions(self) -> dict:
         """
@@ -38,7 +46,8 @@ class ExelHandler:
         positions = {}
         encountered_tickers = set()
 
-        for row_number, row_data in enumerate(self.file.active.iter_rows(start_row=self.COLUMN_A, values_only=True), start=1):
+        for row_number, row_data in enumerate(self.file.active.iter_rows(min_row=self.COLUMN_A, values_only=True),
+                                              start=1):
             ticker = row_data[1]
             # Skip excluded tickers
             if ticker in self.EXCLUDED_TICKERS or row_data[0] == self.CASH:
