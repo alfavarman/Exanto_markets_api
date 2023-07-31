@@ -39,7 +39,7 @@ data = {
         },
         {
             "convertedPnl": "4487.5",
-            "symbolId": "CCJ.NYSE",
+            "symbolId": "CCJG.NYSE",
             "convertedValue": "16867.5",
             "price": "33.735",
             "accruedInterest": "null",
