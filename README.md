@@ -3,6 +3,7 @@
 ## Overview
 This is a simple Python script to update an Excel portfolio file with data obtained from the EXANTO API. The script is designed to work with an Excel file containing financial positions and available cash. The data from the API is used to update the values in the corresponding positions.
 
+### API Docs:  https://api-live.exante.eu/api-docs/#section/API-versions
 
 ## Prerequisites
 - Python 3.x
