@@ -1,29 +1,39 @@
 import logging
 from typing import List, Dict, Any
-from openpyxl import load_workbook
 
 
-# concole
-logging.getLogger().setLevel(logging.INFO)
+# logger to log to console with information
+# logging.getLogger().setLevel(logging.INFO)
+
 
 class ExelHandler:
     # tickets not from exanto, none for empty cell
     EXCLUDED_TICKERS = ("BTC", "ETH", "TLT", "BUSD", None)
     CASH = "Gotowka na koncie"
+    COLUMN_E = 5
+    COLUMN_A = 1
 
-    def __init__(self, file_name: str):
+    def __init__(self, file_name: str, load_workbook_func):
         self.file_name = file_name
-        self.file = load_workbook(self.file_name)
+        self.load_workbook_func = load_workbook_func
+        self.file = None
+        self.positions = None
+
+    def __enter__(self):
+        self.file = self.load_workbook_func(self.file_name)
         self.positions = self._load_file_positions()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.file.save(self.file_name)
+        self.file.close()
+        logging.info(f"File {self.file_name} updated and closed successfully")
 
     def update_file_with_api_data(self, api_data: dict) -> None:
-        """ update file with api data"""
+        """update file with api data"""
         for position in api_data["positions"]:
             self._update_position(api_position=position)
         self._update_available_cash(api_currencies=api_data["currencies"])
-        self.file.save(self.file_name)
-        self.file.close()
-        logging.info(f"File {self.file_name} updated successfully")
 
     def _load_file_positions(self) -> dict:
         """
@@ -36,7 +46,9 @@ class ExelHandler:
         positions = {}
         encountered_tickers = set()
 
-        for row_number, row_data in enumerate(self.file.active.iter_rows(1, values_only=True), start=1):
+        for row_number, row_data in enumerate(
+            self.file.active.iter_rows(min_row=self.COLUMN_A, values_only=True), start=1
+        ):
             ticker = row_data[1]
             # Skip excluded tickers
             if ticker in self.EXCLUDED_TICKERS or row_data[0] == self.CASH:
@@ -74,7 +86,7 @@ class ExelHandler:
         """
         ticker = api_position["symbolId"].split(".")[0]
         if ticker not in self.positions:
-            logging.warning(f"Ticker {ticker} not found in Excel file")
+            logging.warning(f"Ticker {ticker} not found in Excel file. Should You add?")
         else:
             value = self._repr_in_thousands(api_position["convertedValue"])
             self._update_row_value(ticker=ticker, value=value)
@@ -97,4 +109,4 @@ class ExelHandler:
         :param ticker: The ticker symbol of the position.
         :param value: The value to be set for the position. If value is 0, the Excel cell will be emptied.
         """
-        self.file.active.cell(row=self.positions[ticker], column=5).value = value or None
+        self.file.active.cell(row=self.positions[ticker], column=self.COLUMN_E).value = value or None
