@@ -2,14 +2,16 @@ import logging
 from typing import List, Dict, Any
 from openpyxl import load_workbook
 
-
-# concole
+# console
 logging.getLogger().setLevel(logging.INFO)
+
 
 class ExelHandler:
     # tickets not from exanto, none for empty cell
     EXCLUDED_TICKERS = ("BTC", "ETH", "TLT", "BUSD", None)
     CASH = "Gotowka na koncie"
+    COLUMN_E = 5
+    COLUMN_A = 1
 
     def __init__(self, file_name: str):
         self.file_name = file_name
@@ -36,7 +38,7 @@ class ExelHandler:
         positions = {}
         encountered_tickers = set()
 
-        for row_number, row_data in enumerate(self.file.active.iter_rows(1, values_only=True), start=1):
+        for row_number, row_data in enumerate(self.file.active.iter_rows(start_row=self.COLUMN_A, values_only=True), start=1):
             ticker = row_data[1]
             # Skip excluded tickers
             if ticker in self.EXCLUDED_TICKERS or row_data[0] == self.CASH:
@@ -97,4 +99,4 @@ class ExelHandler:
         :param ticker: The ticker symbol of the position.
         :param value: The value to be set for the position. If value is 0, the Excel cell will be emptied.
         """
-        self.file.active.cell(row=self.positions[ticker], column=5).value = value or None
+        self.file.active.cell(row=self.positions[ticker], column=self.COLUMN_E).value = value or None
